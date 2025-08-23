@@ -6,9 +6,9 @@ A web application that generates WhatsApp pairing codes for phone number authent
 
 # Note
 ```
-   You can also change token in
-   hastebin/makeSession.js
-   if u want, get it on hastebin web
+   You can also change key in
+   Functions/makeSession.js
+   if u want, get it on pastebin web
 ```
 
 ## Features
@@ -30,7 +30,7 @@ npm install
 ```bash
 npm start
 ```
-The server will run on port 5000.
+The server will run on port 8000.
 
 ## Usage
 
@@ -43,7 +43,7 @@ The server will run on port 5000.
 
 - @whiskeysockets/baileys
 - express
-- hastebin api
+- pastebin api
 - pino
 - awesome-phonenumber
 
