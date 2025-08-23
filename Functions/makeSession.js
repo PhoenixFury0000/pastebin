@@ -1,4 +1,3 @@
-
 const axios = require("axios");
 
 async function create(data) {
@@ -13,16 +12,14 @@ async function create(data) {
         'api_dev_key': 'ypkqXUGgzysc_yLPTBaEZ_G3G-nvjEsh',
         'api_option': 'paste',
         'api_paste_code': data,
-        'api_paste_private': '1', // 0=public, 1=unlisted, 2=private
-        'api_paste_expire_date': 'N' // Never expires
+        'api_paste_private': '1', 
+        'api_paste_expire_date': 'N' 
       })
     };
     
     const res = await axios(config);
-    
-    // Pastebin returns the full URL, we need to extract the paste ID
-    const pasteUrl = res.data;
-    const pasteId = pasteUrl.split('/').pop();
+        const pu = res.data;
+    const pasteId = pu.split('/').pop();
     
     return { id: pasteId };
   } catch (error) {
