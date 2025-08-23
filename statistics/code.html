@@ -1,0 +1,382 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your WhatsApp Pairing Code</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+        
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #667eea, #764ba2, #25D366, #128C7E);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+            z-index: -1;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 50px 40px;
+            border-radius: 25px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.2);
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 25px;
+            animation: successPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes successPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 2.2em;
+            font-weight: 700;
+            background: linear-gradient(45deg, #25D366, #128C7E);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        
+        .code-container {
+            position: relative;
+            margin: 30px 0;
+        }
+        
+        .code-display {
+            font-size: 32px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #f8f9fa, #ffffff);
+            padding: 30px 20px;
+            border-radius: 20px;
+            border: 3px solid transparent;
+            background-clip: padding-box;
+            margin: 25px 0;
+            letter-spacing: 4px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(37, 211, 102, 0.2);
+            animation: codeGlow 3s ease-in-out infinite;
+        }
+        
+        .code-display:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, #25D366, #128C7E, #25D366);
+            background-size: 200% 200%;
+            border-radius: 20px;
+            z-index: -1;
+            padding: 3px;
+            animation: borderGlow 2s linear infinite;
+        }
+        
+        @keyframes codeGlow {
+            0%, 100% { color: #2c3e50; }
+            50% { color: #25D366; }
+        }
+        
+        @keyframes borderGlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .instructions {
+            color: #555;
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(37, 211, 102, 0.1);
+            border-radius: 15px;
+            border-left: 4px solid #25D366;
+        }
+        
+        .instructions-steps {
+            text-align: left;
+            margin-top: 15px;
+        }
+        
+        .step {
+            margin: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .step:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #25D366;
+            font-weight: bold;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        
+        .copy-btn {
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #25D366, #128C7E);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3);
+        }
+        
+        .copy-btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .copy-btn:hover:before {
+            left: 100%;
+        }
+        
+        .copy-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(37, 211, 102, 0.4);
+        }
+        
+        .back-btn {
+            padding: 15px 30px;
+            background: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .back-btn:hover {
+            background: rgba(108, 117, 125, 0.2);
+            transform: translateY(-3px);
+        }
+        
+        .copy-success {
+            position: fixed;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #25D366;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3);
+            opacity: 0;
+            animation: copyNotification 3s ease-in-out;
+            z-index: 1000;
+        }
+        
+        @keyframes copyNotification {
+            0%, 100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            15%, 85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        
+        .sparkles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .sparkle {
+            position: absolute;
+            color: #25D366;
+            font-size: 20px;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+        
+        .sparkle:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+        .sparkle:nth-child(2) { top: 30%; right: 15%; animation-delay: 0.5s; }
+        .sparkle:nth-child(3) { bottom: 25%; left: 20%; animation-delay: 1s; }
+        .sparkle:nth-child(4) { bottom: 35%; right: 10%; animation-delay: 1.5s; }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1) rotate(180deg); }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                margin: 20px;
+                padding: 40px 30px;
+            }
+            
+            .code-display {
+                font-size: 24px;
+                letter-spacing: 2px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .copy-btn, .back-btn {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    <div class="sparkles">
+        <div class="sparkle">✨</div>
+        <div class="sparkle">⭐</div>
+        <div class="sparkle">💫</div>
+        <div class="sparkle">🌟</div>
+    </div>
+    
+    <div class="container">
+        <div class="success-icon">🎉</div>
+        <h1>Your Pairing Code</h1>
+        <p class="subtitle">Your secure WhatsApp pairing code has been generated successfully!</p>
+        
+        <div class="code-container">
+            <div class="code-display" id="codeDisplay">Loading...</div>
+        </div>
+        
+        <div class="instructions">
+            <strong>How to use this code:</strong>
+            <div class="instructions-steps">
+                <div class="step">Open WhatsApp on your phone</div>
+                <div class="step">Go to Settings → Linked Devices</div>
+                <div class="step">Tap "Link a Device"</div>
+                <div class="step">Enter the code below when prompted</div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="copy-btn" onclick="copyCode()">📋 Copy Code</button>
+            <a href="/pair.html" class="back-btn">🔄 Get Another Code</a>
+        </div>
+    </div>
+
+    <script>
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        function copyCode() {
+            const code = document.getElementById('codeDisplay').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showCopySuccess();
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = code;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showCopySuccess();
+            });
+        }
+        
+        function showCopySuccess() {
+            const notification = document.createElement('div');
+            notification.className = 'copy-success';
+            notification.textContent = '✅ Code copied to clipboard!';
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 3000);
+        }
+
+        // Get code from URL parameter and display it
+        const code = getUrlParameter('code');
+        if (code) {
+            document.getElementById('codeDisplay').textContent = code;
+        } else {
+            document.getElementById('codeDisplay').textContent = 'No code found';
+        }
+    </script>
+</body>
+</html>
