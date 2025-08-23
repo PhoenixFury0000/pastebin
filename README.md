@@ -1,2 +1,0 @@
-# pastebin
-g pair pastebin 
