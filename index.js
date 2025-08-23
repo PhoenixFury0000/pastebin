@@ -2,8 +2,8 @@ var express = require('express');
 var path = require('path');
 const body = require("body-parser");
 var axios = require('axios');
-var { create } = require('./hastebin/makeSession');
-var { get } = require("./hastebin/makeSession"); 
+var { create } = require('./Functions/makeSession');
+var { get } = require("./Functions/makeSession"); 
 
 function ToMyId(len = 32) {
     let res = '';
@@ -38,11 +38,11 @@ function rmFile(path) {
 }
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(root, '/statics/index.html'));
+    res.sendFile(path.join(root, '/statistics/index.html'));
 });
 
 app.get('/pair.html', (req, res) => {
-    res.sendFile(path.join(root, '/statics/pair.html'));
+    res.sendFile(path.join(root, '/statistics/pair.html'));
 });
 
 app.get('/session', async (req, res) => {
@@ -100,13 +100,13 @@ app.get('/pair', async (req, res) => {
                     try {
                         var json = await fs.promises.readFile(`${root}/session/${id}/creds.json`, 'utf-8');     
                         const { id: sessionId } = await create(json);
-                        await wa.sendMessage(wa.user.id, { text: '\n*Do not share this session*\n\nxastral~' + id });
+                        await wa.sendMessage(wa.user.id, { text: '\n*Do not share this session*\n\ngarfield~' + id });
                         console.log('Session sent successfully:', id);
                         await delay(1000);
                         await wa.ws.close();
                         return await rmFile('./session/' + id);
                     } catch (err) {
-                        console.error('Error sending session:', err);
+                        console.error(err);
                         await wa.ws.close();
                         return await rmFile('./session/' + id);
                     }
