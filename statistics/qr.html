@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QR Code</title>
+  <title>session</title>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     * {
@@ -258,65 +257,53 @@
       const btn = document.getElementById('generateBtn');
       const loading = document.getElementById('loading');
       const qrContainer = document.getElementById('qrContainer');
-      
       btn.disabled = true;
       btn.innerHTML = '<i data-lucide="loader"></i> Generating...';
       loading.classList.add('show');
-      qrContainer.classList.remove('show');
-      
-      try {
-        const controller = new AbortController();
+      qrContainer.classList.remove('show'); 
+      try { const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 35000);
-        
         const response = await fetch('/qr', {
           signal: controller.signal
         });
         
         clearTimeout(timeoutId);
-        
         if (!response.ok) {
-          throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
-        }
-        
+        throw new Error(`Server responded with ${response.status}: ${response.statusText}`);}
         const data = await response.json();
-        
         if (data.error) {
-          throw new Error(data.error);
-        }
-        
+        throw new Error(data.error);}
         if (data.qr) {
           const qrElement = document.getElementById('qrcode');
           qrElement.innerHTML = '';
-          
           const img = document.createElement('img');
           img.src = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(data.qr)}`;
           img.style.width = '280px';
           img.style.height = '280px';
           img.style.display = 'block';
-          
           img.onload = function() {
             qrElement.appendChild(img);
             qrContainer.classList.add('show');
-            console.log('QR code generated successfully');
+            console.log('QR code generated');
           };
           
           img.onerror = function() {
             console.error('QR Image loading failed');
-            showError('Failed to load QR code image');
+            showError('Failed to load qr code image');
           };
         } else {
-          throw new Error('No QR code received from server');
+          throw new Error('No qr code received from server');
         }
       } catch (error) {
-        console.error('QR Generation Error:', error);
+        console.error(error);
         if (error.name === 'AbortError') {
           showError('Request timeout - Please try again');
         } else {
-          showError(`Error: ${error.message}`);
+          showError(`${error.message}`);
         }
       } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i data-lucide="qr-code"></i> Generate New QR';
+        btn.innerHTML = '<i data-lucide="qr-code"></i> Generate Session';
         loading.classList.remove('show');
         lucide.createIcons();
       }
@@ -331,10 +318,8 @@
       const errorDiv = document.createElement('div');
       errorDiv.className = 'error-message';
       errorDiv.textContent = message;
-      
       const loading = document.getElementById('loading');
       loading.parentNode.insertBefore(errorDiv, loading.nextSibling);
-      
       setTimeout(() => {
         if (errorDiv.parentNode) {
           errorDiv.remove();
