@@ -145,7 +145,6 @@ app.get('/pair', async (req, res) => {
 
 app.get('/qr', async (req, res) => {
     var id = ToMyId();
-    
     async function qrConnect() {
         const { state, saveCreds } = await useMultiFileAuthState('./session/' + id);
         try {
@@ -160,15 +159,14 @@ app.get('/qr', async (req, res) => {
                 syncFullHistory: false
             });
 
-            // Set a timeout to prevent hanging
             const timeout = setTimeout(() => {
                 if (!res.headersSent) {
-                    console.log('QR generation timeout for ID:', id);
+                    console.log('time_out',id);
                     res.status(408).json({ error: "QR generation timeout" });
                     try {
                         wa.ws.close();
                     } catch (e) {
-                        console.error('Error closing WebSocket:', e);
+                        console.error(e);
                     }
                     rmFile('./session/' + id);
                 }
@@ -176,7 +174,6 @@ app.get('/qr', async (req, res) => {
 
             wa.ev.on('connection.update', async (update) => {
                 const { connection, lastDisconnect, qr } = update;
-                
                 if (qr && !res.headersSent) {
                     console.log('QR generated successfully for ID:', id);
                     clearTimeout(timeout);
@@ -187,8 +184,7 @@ app.get('/qr', async (req, res) => {
                 if (connection === 'open') {
                     clearTimeout(timeout);
                     await delay(3000);
-                    try {
-                        var json = await fs.promises.readFile(`${root}/session/${id}/creds.json`, 'utf-8');     
+                    try { var json = await fs.promises.readFile(`${root}/session/${id}/creds.json`, 'utf-8');     
                         const { id: sessionId } = await create(json);    
                         await wa.sendMessage(wa.user.id, { 
                             text: `*Do not share this session or creds as well*\nYou can use session id or if you want upload the creds.json\n\n*Join our chat group*.  https://chat.whatsapp.com/KLd7DIw1OV56wj4BRw0oE9\n\nSession ID: garfield~${sessionId}` 
@@ -204,7 +200,7 @@ app.get('/qr', async (req, res) => {
                         await wa.ws.close();
                         return await rmFile('./session/' + id);
                     } catch (err) {
-                        console.error('Session creation error:', err);
+                        console.error(err);
                         await wa.ws.close();
                         return await rmFile('./session/' + id);
                     }
@@ -219,10 +215,8 @@ app.get('/qr', async (req, res) => {
             });
 
             wa.ev.on('creds.update', saveCreds);
-            
-            // Handle WebSocket errors
             wa.ws.on('error', (error) => {
-                console.error('WebSocket error for ID:', id, error);
+                console.error(id, error);
                 if (!res.headersSent) {
                     clearTimeout(timeout);
                     res.status(500).json({ error: "Connection failed" });
@@ -230,7 +224,7 @@ app.get('/qr', async (req, res) => {
             });
 
         } catch (err) {
-            console.error('QR Connection error:', err);
+            console.error(err);
             await rmFile('./session/' + id);
             if (!res.headersSent) {
                 res.status(500).json({ error: "Service unavailable", details: err.message });
