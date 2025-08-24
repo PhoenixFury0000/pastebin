@@ -1,0 +1,348 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Code</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #1a202c;
+      min-height: 100vh;
+      color: #fff;
+      padding: 40px 20px;
+    }
+    
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: #2d3748;
+      display: flex;
+      align-items: center;
+      padding: 0 30px;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .menu-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      transition: background 0.2s;
+    }
+    
+    .menu-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .menu-text {
+      font-size: 10px;
+      font-weight: 500;
+      color: #cbd5e0;
+    }
+    
+    .main-content {
+      margin-top: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 140px);
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 20px;
+    }
+    
+    .generate-btn {
+      background: linear-gradient(135deg, #4299e1, #3182ce);
+      color: #fff;
+      border: none;
+      padding: 18px 40px;
+      border-radius: 15px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 15px rgba(66, 153, 225, 0.3);
+      margin-bottom: 40px;
+    }
+    
+    .generate-btn:hover {
+      background: linear-gradient(135deg, #3182ce, #2c5282);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(66, 153, 225, 0.4);
+    }
+    
+    .generate-btn:disabled {
+      background: #718096;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .qr-container {
+      display: none;
+      text-align: center;
+      margin: 40px 0;
+    }
+    
+    .qr-container.show {
+      display: block;
+    }
+    
+    #qrcode {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 30px 0;
+      background: #fff;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      display: inline-block;
+    }
+    
+    #qrcode img {
+      border-radius: 10px;
+      display: block;
+    }
+    
+    .loading {
+      display: none;
+      margin: 20px 0;
+      font-size: 16px;
+      color: #cbd5e0;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+    }
+    
+    .loading.show {
+      display: flex;
+    }
+    
+    .instruction {
+      font-size: 16px;
+      color: #a0aec0;
+      text-align: center;
+      margin-top: 30px;
+      line-height: 1.6;
+      max-width: 400px;
+    }
+    
+    .error-message {
+      background: rgba(255, 107, 107, 0.15);
+      color: #fc8181;
+      padding: 16px 24px;
+      border-radius: 12px;
+      margin: 20px 0;
+      text-align: center;
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      backdrop-filter: blur(10px);
+    }
+    
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    
+    .loading svg {
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    
+    .qr-container.show {
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    @media (max-width: 768px) {
+      .main-content {
+        padding: 0 15px;
+      }
+      
+      .generate-btn {
+        padding: 16px 35px;
+        font-size: 15px;
+      }
+      
+      #qrcode {
+        padding: 15px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      body {
+        padding: 20px 10px;
+      }
+      
+      .header {
+        padding: 0 20px;
+      }
+      
+      .main-content {
+        margin-top: 80px;
+      }
+      
+      .generate-btn {
+        padding: 15px 30px;
+        font-size: 14px;
+      }
+      
+      .instruction {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <button class="menu-btn" onclick="window.location.href='/'">
+      <i data-lucide="menu"></i>
+      <span class="menu-text">Menu</span>
+    </button>
+  </div>
+  
+  <div class="main-content">
+    <button id="generateBtn" class="generate-btn" onclick="generateQR()">
+      <i data-lucide="qr-code"></i> Generate QR Code
+    </button>
+    
+    <div id="loading" class="loading">
+      <i data-lucide="loader"></i> Generating QR Code...
+    </div>
+    
+    <div id="qrContainer" class="qr-container">
+      <div id="qrcode"></div>
+    </div>
+    
+    <div class="instruction">
+      Scan the QR code with WhatsApp to connect your account. Your session will be sent automatically once connected.
+    </div>
+  </div>
+
+  <script>
+    async function generateQR() {
+      const btn = document.getElementById('generateBtn');
+      const loading = document.getElementById('loading');
+      const qrContainer = document.getElementById('qrContainer');
+      
+      btn.disabled = true;
+      btn.innerHTML = '<i data-lucide="loader"></i> Generating...';
+      loading.classList.add('show');
+      qrContainer.classList.remove('show');
+      
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 35000);
+        
+        const response = await fetch('/qr', {
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        
+        if (data.qr) {
+          const qrElement = document.getElementById('qrcode');
+          qrElement.innerHTML = '';
+          
+          const img = document.createElement('img');
+          img.src = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(data.qr)}`;
+          img.style.width = '280px';
+          img.style.height = '280px';
+          img.style.display = 'block';
+          
+          img.onload = function() {
+            qrElement.appendChild(img);
+            qrContainer.classList.add('show');
+            console.log('QR code generated successfully');
+          };
+          
+          img.onerror = function() {
+            console.error('QR Image loading failed');
+            showError('Failed to load QR code image');
+          };
+        } else {
+          throw new Error('No QR code received from server');
+        }
+      } catch (error) {
+        console.error('QR Generation Error:', error);
+        if (error.name === 'AbortError') {
+          showError('Request timeout - Please try again');
+        } else {
+          showError(`Error: ${error.message}`);
+        }
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="qr-code"></i> Generate New QR';
+        loading.classList.remove('show');
+        lucide.createIcons();
+      }
+    }
+    
+    function showError(message) {
+      const existingError = document.querySelector('.error-message');
+      if (existingError) {
+        existingError.remove();
+      }
+      
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-message';
+      errorDiv.textContent = message;
+      
+      const loading = document.getElementById('loading');
+      loading.parentNode.insertBefore(errorDiv, loading.nextSibling);
+      
+      setTimeout(() => {
+        if (errorDiv.parentNode) {
+          errorDiv.remove();
+        }
+      }, 5000);
+    }
+    
+    lucide.createIcons();
+  </script>
+</body>
+</html>
