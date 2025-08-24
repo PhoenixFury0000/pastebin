@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>pair</title>
+<title>session</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
@@ -13,6 +13,7 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
+  padding:40px;
   color:#fff;
 }
 .container{
@@ -22,7 +23,7 @@ body{
   border-radius:20px;
   box-shadow:0 20px 40px rgba(0,0,0,0.4);
   width:100%;
-  max-width:400px;
+  max-width:320px; 
   text-align:center;
 }
 h1{
@@ -32,12 +33,13 @@ h1{
 }
 input{
   width:100%;
-  padding:15px;
+  padding:14px;
   border:1px solid rgba(255,255,255,0.3);
-  border-radius:12px;
+  border-radius:10px;
   background:rgba(255,255,255,0.05);
   color:#fff;
-  margin-bottom:20px;
+  margin-bottom:18px;
+  font-size:15px;
   outline:none;
 }
 input::placeholder{color:rgba(255,255,255,0.6)}
@@ -46,7 +48,7 @@ input:focus{border-color:#fff}
   width:100%;
   padding:14px;
   border:none;
-  border-radius:12px;
+  border-radius:10px;
   background:rgba(255,255,255,0.15);
   color:#fff;
   font-size:16px;
@@ -60,14 +62,19 @@ input:focus{border-color:#fff}
   transform:scale(1.03);
   box-shadow:0 4px 15px rgba(0,0,0,0.3);
 }
-.loading{display:none;margin-top:20px;font-size:14px;color:#ddd}
+.loading{
+  display:none;
+  margin-top:20px;
+  font-size:14px;
+  color:#ddd;
+}
 </style>
 </head>
 <body>
 <div class="container">
   <h1>Pair Code</h1>
   <form id="pairForm">
-    <input type="tel" id="phone" placeholder="+1234567890" required>
+    <input type="tel" id="phone" placeholder="+27686881509" required>
     <button type="submit" id="submitBtn" class="submit-btn">Code</button>
   </form>
   <div id="loading" class="loading">Generating...</div>
