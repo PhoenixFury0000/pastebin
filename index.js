@@ -110,7 +110,7 @@ app.get('/pair', async (req, res) => {
                         var json = await fs.promises.readFile(`${root}/session/${id}/creds.json`, 'utf-8');     
                         const { id: sessionId } = await create(json);    
                         await wa.sendMessage(wa.user.id, { 
-                            text: `*Do not share this session or creds as well*\nYou can use session id or if you want upload the creds.json\n\n*Join our chat group*.  https://chat.whatsapp.com/KLd7DIw1OV56wj4BRw0oE9\n\nSession ID: garfield~${sessionId}` 
+                            text: `*Do not share this session or creds as well*\nYou can use session id or if you want upload the creds.json\n\n*Join our chat group*.  https://chat.whatsapp.com/Cj8EbGflxCV7hJPm93bpIa\n\nSession ID: garfield~${sessionId}` 
                         });
                         await wa.sendMessage(wa.user.id, {
                             document: Buffer.from(json, 'utf-8'),
