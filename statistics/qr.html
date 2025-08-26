@@ -58,6 +58,62 @@
       color: #cbd5e0;
     }
     
+    .sidebar {
+      position: fixed;
+      top: 60px;
+      left: -150px;
+      width: 150px;
+      height: 120px;
+      background: #2d3748;
+      transition: left 0.3s ease;
+      z-index: 200;
+      padding: 15px 10px;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+      border-radius: 0 0 15px 0;
+    }
+    
+    .sidebar.open {
+      left: 0;
+    }
+    
+    .sidebar-item {
+      display: block;
+      padding: 12px 10px;
+      margin: 8px 0;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      text-align: center;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .sidebar-item:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateX(3px);
+    }
+    
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 150;
+    }
+    
+    .sidebar-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    
     .main-content {
       margin-top: 100px;
       display: flex;
@@ -116,11 +172,6 @@
       justify-content: center;
       align-items: center;
       margin: 30px 0;
-      background: #fff;
-      padding: 20px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-      display: inline-block;
     }
     
     #qrcode img {
@@ -228,10 +279,16 @@
 </head>
 <body>
   <div class="header">
-    <button class="menu-btn" onclick="window.location.href='/'">
+    <button class="menu-btn" onclick="toggleSidebar()">
       <i data-lucide="menu"></i>
       <span class="menu-text">Menu</span>
     </button>
+  </div>
+  
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+  <div class="sidebar" id="sidebar">
+    <a href="/" class="sidebar-item">Back</a>
+    <a href="https://api.naxordeve.qzz.io" class="sidebar-item" target="_blank">Api</a>
   </div>
   
   <div class="main-content">
@@ -274,22 +331,26 @@
         if (data.error) {
         throw new Error(data.error);}
         if (data.qr) {
+          const qr_res = await fetch(`/generate-qr?data=${data.qr}`);
+          const qrData = await qr_res.json();
+          if (qrData.error) {
+          throw new Error(qrData.error);}
           const qrElement = document.getElementById('qrcode');
           qrElement.innerHTML = '';
           const img = document.createElement('img');
-          img.src = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(data.qr)}`;
+          img.src = qrData.qrCode;
           img.style.width = '280px';
           img.style.height = '280px';
           img.style.display = 'block';
           img.onload = function() {
             qrElement.appendChild(img);
             qrContainer.classList.add('show');
-            console.log('QR code generated');
+            console.log('QR code generated locally');
           };
           
           img.onerror = function() {
-            console.error('QR Image loading failed');
-            showError('Failed to load qr code image');
+            console.error('QR loading failed');
+            showError('Failed to load qr code');
           };
         } else {
           throw new Error('No qr code received from server');
@@ -327,7 +388,26 @@
       }, 5000);
     }
     
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      if (sidebar.classList.contains('open')) {
+        closeSidebar();
+      } else {
+        sidebar.classList.add('open');
+        overlay.classList.add('show');
+      }
+    }
+    
+    function cl_sd() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+    }
+    
     lucide.createIcons();
   </script>
 </body>
-</html>
+  </html>
+  
