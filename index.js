@@ -2,6 +2,7 @@ var express = require('express');
 var path = require('path');
 const body = require("body-parser");
 var axios = require('axios');
+const QRCode = require('qrcode');
 var { create } = require('./Functions/makeSession');
 var { get } = require("./Functions/makeSession"); 
 
@@ -116,7 +117,7 @@ app.get('/pair', async (req, res) => {
                             mimetype: 'application/json',
                             fileName: 'creds.json'
                         });
-                        
+
                         console.log('Session sent successfully:', id);
                         await delay(1000);
                         await wa.ws.close();
@@ -145,7 +146,7 @@ app.get('/pair', async (req, res) => {
 
 app.get('/qr', async (req, res) => {
     var id = ToMyId();
-    async function qrConnect() {
+    async function qrPair() {
         const { state, saveCreds } = await useMultiFileAuthState('./session/' + id);
         try {
             let wa = WASocket({
@@ -159,30 +160,12 @@ app.get('/qr', async (req, res) => {
                 syncFullHistory: false
             });
 
-            const timeout = setTimeout(() => {
-                if (!res.headersSent) {
-                    console.log('time_out',id);
-                    res.status(408).json({ error: "QR generation timeout" });
-                    try {
-                        wa.ws.close();
-                    } catch (e) {
-                        console.error(e);
-                    }
-                    rmFile('./session/' + id);
-                }
-            }, 30000);
-
             wa.ev.on('connection.update', async (update) => {
                 const { connection, lastDisconnect, qr } = update;
                 if (qr && !res.headersSent) {
-                    console.log('QR generated successfully for ID:', id);
-                    clearTimeout(timeout);
                     res.json({ qr: qr });
-                    return;
                 }
-                
                 if (connection === 'open') {
-                    clearTimeout(timeout);
                     await delay(3000);
                     try { var json = await fs.promises.readFile(`${root}/session/${id}/creds.json`, 'utf-8');     
                         const { id: sessionId } = await create(json);    
@@ -194,8 +177,8 @@ app.get('/qr', async (req, res) => {
                             mimetype: 'application/json',
                             fileName: 'creds.json'
                         });
-                        
-                        console.log('QR Session sent successfully:', id);
+
+                        console.log('Session sent successfully:', id);
                         await delay(1000);
                         await wa.ws.close();
                         return await rmFile('./session/' + id);
@@ -204,35 +187,35 @@ app.get('/qr', async (req, res) => {
                         await wa.ws.close();
                         return await rmFile('./session/' + id);
                     }
-                } else if (connection === 'close' && lastDisconnect && lastDisconnect.error && lastDisconnect.error.output.statusCode !== 401) {
-                    console.log('Connection closed, attempting reconnection for ID:', id);
-                    if (!res.headersSent) {
-                        clearTimeout(timeout);
-                        await delay(3000);
-                        qrConnect();
-                    }
+                } else if (connection === "close" && lastDisconnect && lastDisconnect.error && lastDisconnect.error.output.statusCode != 401) {
+                    await delay(10000);
+                    qrPair();
                 }
             });
 
             wa.ev.on('creds.update', saveCreds);
-            wa.ws.on('error', (error) => {
-                console.error(id, error);
-                if (!res.headersSent) {
-                    clearTimeout(timeout);
-                    res.status(500).json({ error: "Connection failed" });
-                }
-            });
-
         } catch (err) {
             console.error(err);
             await rmFile('./session/' + id);
             if (!res.headersSent) {
-                res.status(500).json({ error: "Service unavailable", details: err.message });
+                res.status(500).json({ error: "Service unavailable" });
             }
         }
     }
 
-    return await qrConnect();
+    return await qrPair();
+});
+
+app.get('/generate-qr', async (req, res) => {
+    const data = req.query.data;
+    if (!data) {
+    return res.status(400).json({ error: 'Missing data parameter' });
+    }try { const qr_v = await QRCode.toDataURL(data);
+    res.json({ qrCode: qr_v });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'QR code generation failed' });
+    }
 });
 
 app.listen(port, () => {
